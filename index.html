@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Studio</title>
+<!-- Font Fredoka giống phong cách hoạt hình -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #7eb0d5;
+  --surface: #fcf8eb;
+  --surface-2: #e8dfc8;
+  --surface-hover: #ffffff;
+  --border-color: #3b3b3b;
+  --text-main: #2b2b2b;
+  --text-sub: #555555;
+  --text-dim: #888888;
+  --accent-yellow: #ffca3a;
+  --accent-green: #5cb85c;
+  --radius: 12px;
+  --shadow-hard: 4px 4px 0px rgba(0,0,0,0.15);
+  --shadow-btn: 0 4px 0px var(--border-color);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  margin: 0;
+  background-color: var(--bg-base);
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  color: var(--text-main);
+  font-family: 'Fredoka', system-ui, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 40px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px 10px 20px;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+/* ===== Ảnh ủng hộ ad (góc trên bên phải, kế avatar) ===== */
+.support-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 20;
+  animation: badgeFloat 2.8s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.support-badge img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+  border: 3px solid var(--border-color);
+  box-shadow: var(--shadow-hard);
+  background: #fff;
+}
+
+.support-badge .support-text {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  color: #ffffff;
+  background: #e63946;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 3px 6px;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.35);
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 4px solid var(--border-color);
+  box-shadow: var(--shadow-hard);
+  padding: 2px;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-wrapper.playing { animation: musicPulse 1.2s infinite alternate ease-in-out; }
+
+@keyframes musicPulse {
+  0% { transform: scale(1); box-shadow: var(--shadow-hard); }
+  100% { transform: scale(1.05); box-shadow: 0 6px 0px rgba(0,0,0,0.2); border-color: var(--accent-yellow); }
+}
+
+.avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+.profile-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  text-shadow: 2px 2px 0 #333, -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.audio-player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #333;
+  border: 3px solid var(--border-color);
+  border-radius: 30px;
+  padding: 8px 18px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s;
+}
+.audio-player-card:active { transform: translateY(4px); box-shadow: none; }
+
+.play-icon-badge {
+  background: var(--accent-green);
+  border: 2px solid var(--border-color);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 var(--border-color);
+}
+
+.audio-info { display: flex; flex-direction: column; flex: 1; margin: 0 12px; }
+.audio-title { font-size: 13px; font-weight: 600; color: #ffffff; }
+.audio-sub { font-size: 11px; color: #aaaaaa; font-weight: 500; }
+
+.equalizer { display: flex; align-items: flex-end; gap: 3px; height: 18px; }
+.eq-bar { width: 4px; background: var(--accent-green); border-radius: 2px; height: 4px; }
+.playing .eq-bar { animation: wave 0.8s infinite ease-in-out alternate; }
+.playing .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+.playing .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+.playing .eq-bar:nth-child(3) { animation-delay: 0.2s; }
+.playing .eq-bar:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes wave { 0% { height: 4px; } 100% { height: 18px; } }
+
+.social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 25px;
+}
+
+.yt-btn, .tt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  width: 100%;
+  min-width: 0;
+  letter-spacing: 0.5px;
+  border: 3px solid var(--border-color);
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.yt-btn { background: #ff0000; }
+.tt-btn { background: #000000; }
+
+.yt-btn:active, .tt-btn:active { transform: translateY(4px); box-shadow: none; }
+
+main { max-width: 800px; margin: 0 auto; padding: 10px 16px; }
+
+.hero-title {
+  text-align: center;
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 700;
+  margin: 4px 0;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 var(--border-color), -1px -1px 0 var(--border-color), 1px -1px 0 var(--border-color), -1px 1px 0 var(--border-color), 1px 1px 0 var(--border-color);
+}
+
+.hero-sub {
+  text-align: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+  text-shadow: 1px 1px 0 var(--border-color);
+}
+
+/* ===== Search wrap + Suggestions ===== */
+.search-wrap { position: relative; margin-bottom: 20px; }
+
+.search-box {
+  background: var(--surface);
+  border: 3px solid var(--border-color);
+  border-radius: 30px;
+  padding: 6px 6px 6px 18px;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-hard);
+  margin-bottom: 0;
+}
+.search-box input { border: none; outline: none; width: 100%; font-family: inherit; font-size: 15px; color: var(--text-main); background: transparent; font-weight: 500; }
+.search-box input::placeholder { color: var(--text-dim); }
+.search-box button {
+  background: var(--accent-yellow); border: 2px solid var(--border-color); color: var(--text-main);
+  padding: 8px 20px; border-radius: 20px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+  box-shadow: 0 3px 0 var(--border-color); transition: transform .1s, box-shadow .1s;
+}
+.search-box button:active { transform: translateY(3px); box-shadow: none; }
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--surface);
+  border: 3px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-hard);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  padding: 6px;
+}
+.suggestions.show { display: block; }
+.suggestions .sug-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  transition: background .15s;
+}
+.suggestions .sug-item:hover,
+.suggestions .sug-item.active { background: var(--accent-yellow); }
+
+/* Ẩn nhãn GAME / HUB */
+.suggestions .sug-type { display: none !important; }
+
+.suggestions .sug-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tags {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tags button {
+  width: 100%; min-width: 0; background: var(--surface); border: 3px solid var(--border-color);
+  padding: 8px 6px; border-radius: 20px; font-family: inherit; font-size: 13px; font-weight: 700;
+  color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 6px; line-height: 1.2; text-align: center; white-space: normal; word-break: break-word; overflow: hidden;
+  box-shadow: 0 3px 0 var(--border-color); transition: transform .1s, box-shadow .1s, background .2s;
+}
+.tags button:active { transform: translateY(3px); box-shadow: none; }
+.tags button.on { background: var(--accent-yellow); color: var(--text-main); }
+.tags button span.dot { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 2px solid var(--border-color); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: var(--surface);
+  border: 3px solid var(--border-color);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-hard);
+  display: flex;
+  flex-direction: column;
+  transition: transform .1s, box-shadow .1s;
+}
+.card:active { transform: translateY(4px); box-shadow: none; }
+
+.card-img-box {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 3px solid var(--border-color);
+}
+
+.card-img-box::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #d0d0d0 25%, #e8e8e8 50%, #d0d0d0 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s infinite; z-index: 1; transition: opacity .35s ease;
+}
+.card-img-box.loaded::before { opacity: 0; pointer-events: none; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.card-img-box img {
+  width: 100%; height: 100%; object-fit: cover; 
+  object-position: top center;
+  opacity: 0; transition: opacity .35s ease; position: relative; z-index: 2;
+}
+.card-img-box img.img-ready { opacity: 1; }
+
+.card-img-placeholder {
+  color: var(--text-main); font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+  text-align: center; padding: 0 8px; position: relative; z-index: 2;
+}
+
+.card-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
+
+.card-title {
+  font-size: 20px; 
+  font-weight: 700; 
+  margin: 0 0 12px 0; 
+  color: var(--text-main); 
+  line-height: 1.3;
+  text-align: center;
+}
+
+.game-name { 
+  color: #e63946; 
+  font-weight: 600; 
+  display: block; 
+  margin-top: 6px; 
+  font-size: 16px; 
+}
+
+.card-footer {
+  margin-top: auto; display: flex; justify-content: space-between; align-items: center;
+  gap: 6px; padding-top: 10px; border-top: 2px dashed rgba(0,0,0,0.1);
+}
+
+.btn-link {
+  flex: 1; text-align: center; background: #ffffff; border: 2px solid var(--border-color);
+  color: var(--text-main); text-decoration: none; font-weight: 700; font-size: 13px; padding: 8px 0;
+  border-radius: 8px; transition: all .1s ease; display: flex; justify-content: center; align-items: center;
+  box-shadow: 0 3px 0 var(--border-color);
+}
+.btn-link:active { transform: translateY(3px); box-shadow: none; background: #f0f0f0; }
+
+.btn-sub { background: #f4f4f4; }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
+.pagination button {
+  background: #ffffff; border: 2px solid var(--border-color); padding: 8px 16px; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer;
+  box-shadow: 0 3px 0 var(--border-color); transition: all 0.1s ease;
+}
+.pagination button:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.pagination button.active { background: var(--accent-yellow); }
+.pagination button:disabled { opacity: 0.5; cursor: not-allowed; background: #ddd; }
+
+@media (max-width: 480px) {
+  .tags { grid-template-columns: repeat(2, 1fr); }
+  .grid { gap: 8px; }
+  .card-body { padding: 10px 6px; }
+  .card-title { font-size: 16px; } 
+  .game-name { font-size: 14px; margin-top: 4px; }
+  .btn-link { font-size: 11px; padding: 6px 0; }
+
+  /* Badge nhỏ lại cho gọn trên điện thoại */
+  .support-badge { width: 78px; top: 8px; right: 8px; gap: 4px; }
+  .support-badge .support-text { font-size: 9px; padding: 2px 4px; border-radius: 6px; }
+}
+.avatar-ph { display:flex; align-items:center; justify-content:center; background:var(--accent-yellow); font-size:44px; font-weight:700; color:var(--text-main); }
+.empty-state { grid-column: 1 / -1; text-align:center; background:var(--surface); border:3px solid var(--border-color); border-radius:var(--radius); box-shadow:var(--shadow-hard); padding:28px 16px; font-weight:600; color:var(--text-sub); }
+</style>
+</head>
+<body>
+
+<div class="header-container">
+  <div class="avatar-wrapper" id="avatarFrame">
+    <div class="avatar-img avatar-ph">S</div>
+  </div>
+  <div class="profile-name">Studio</div>
+</div>
+
+<main>
+  <h1 class="hero-title">Studio</h1>
+  <div class="hero-sub">Chưa có nội dung</div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <input id="q" type="search" placeholder="Tìm kiếm..." autocomplete="off" spellcheck="false">
+      <button id="go" type="button">Tìm</button>
+    </div>
+    <div class="suggestions" id="suggestions" role="listbox" aria-label="Gợi ý tìm kiếm"></div>
+  </div>
+
+  <div class="tags" id="tags"></div>
+  <div class="grid" id="list"></div>
+  <div class="pagination" id="pagination"></div>
+</main>
+
+<script>
+/* ============ Fast CDN rewrite + image resize ============ */
+function fastCDN(url){
+  if (!url) return url;
+
+  const m = url.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/(.+)$/);
+  if (m) {
+    const [, user, repo, rest] = m;
+    let branch, path;
+    if (rest.startsWith('refs/heads/')) {
+      const after = rest.slice(11);
+      const s = after.indexOf('/');
+      if (s !== -1) { branch = after.slice(0, s); path = after.slice(s + 1); }
+    } else {
+      const s = rest.indexOf('/');
+      if (s !== -1) { branch = rest.slice(0, s); path = rest.slice(s + 1); }
+    }
+    if (branch && path) {
+      return `https://cdn.jsdelivr.net/gh/${user}/${repo}@${branch}/${path}`;
+    }
+    return url;
+  }
+
+  if (/^https:\/\/i\.ibb\.co\//.test(url)) {
+    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=640&output=webp&q=75`;
+  }
+
+  return url;
+}
+
+/* ============ Data ============ */
+const SCRIPTS = [
+  /* Mẫu: {id: 1, hub:"Tên", game:"", c:"Tất Cả", link:"", subLink:"", img:""} */
+];
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+shuffle(SCRIPTS);
+
+const dotColors = ['#ff4fa3', '#a855f7', '#38bdf8', '#ffca3a'];
+const $ = id => document.getElementById(id);
+let cat = 'Tất Cả';
+let currentPage = 1;
+const ITEMS_PER_PAGE = 20;
+const cats = ['Tất Cả'];
+
+/* ============ Fast image pipeline ============ */
+let imgObserver;
+if (typeof IntersectionObserver !== 'undefined') {
+  imgObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const img = entry.target;
+      const url = img.dataset.src;
+      if (url && !img.src) {
+        img.src = url;
+        img.onload = () => {
+          img.classList.add('img-ready');
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+        img.onerror = () => {
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+      }
+      imgObserver.unobserve(img);
+    }
+  }, { rootMargin: '600px 0px', threshold: 0.01 });
+} else {
+  imgObserver = {
+    observe: (img) => {
+      const url = img.dataset.src;
+      if (url && !img.src) {
+        img.src = url;
+        img.onload = () => {
+          img.classList.add('img-ready');
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+        img.onerror = () => {
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+      }
+    },
+    unobserve: () => {}
+  };
+}
+
+function primeFirstImages(count = 4) {
+  const imgs = [...document.querySelectorAll('.card-img-box img[data-src]')].slice(0, count);
+  imgs.forEach(img => {
+    const url = img.dataset.src;
+    if (!url) return;
+    img.fetchPriority = 'high';
+    img.removeAttribute('loading');
+    img.src = url;
+    img.onload = () => {
+      img.classList.add('img-ready');
+      const box = img.closest('.card-img-box');
+      if (box) box.classList.add('loaded');
+    };
+    img.onerror = () => {
+      const box = img.closest('.card-img-box');
+      if (box) box.classList.add('loaded');
+    };
+    imgObserver.unobserve(img);
+  });
+}
+
+/* ============ Render ============ */
+function render(){
+  const q = $('q').value.trim().toLowerCase();
+
+  const filtered = SCRIPTS.filter(s =>
+    (cat === 'Tất Cả' || s.c === cat) &&
+    (!q || s.hub.toLowerCase().includes(q) || s.game.toLowerCase().includes(q))
+  );
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+  $('tags').innerHTML = cats.map((c, i) => `
+    <button class="${c === cat ? 'on' : ''}" onclick="changeCat('${c}')">
+      <span class="dot" style="background:${dotColors[i % dotColors.length]}"></span>
+      <span>${c}</span>
+    </button>
+  `).join('');
+
+  if (!paginated.length) {
+    $('list').innerHTML = '<div class="empty-state">Chưa có nội dung</div>';
+  } else $('list').innerHTML = paginated.map(s => `
+    <div class="card">
+      <div class="card-img-box">
+        ${s.img
+          ? `<img data-src="${fastCDN(s.img)}" alt="${s.hub}" decoding="async" loading="lazy" fetchpriority="low" width="640" height="360">`
+          : `<div class="card-img-placeholder">SCRIPT ${s.c.toUpperCase()}</div>`}
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">
+          ${s.hub} ${s.game ? `<span class="game-name">${s.game}</span>` : ''}
+        </h2>
+        <div class="card-footer">
+          <a class="btn-link" href="${s.link}" target="_blank" rel="noopener">LINK</a>
+          <a class="btn-link btn-sub" href="${s.subLink}" target="_blank" rel="noopener">LINK 2</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.card-img-box img[data-src]').forEach(img => imgObserver.observe(img));
+  primeFirstImages(4);
+
+  let pageButtons = '';
+  if (totalPages > 1) {
+    pageButtons += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">&larr; Trước</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      pageButtons += `<button class="${p === currentPage ? 'active' : ''}" onclick="changePage(${p})">${p}</button>`;
+    }
+    pageButtons += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Sau &rarr;</button>`;
+  }
+  $('pagination').innerHTML = pageButtons;
+}
+
+function changeCat(c) { cat = c; currentPage = 1; render(); hideSuggestions(); }
+function changePage(p) { currentPage = p; render(); window.scrollTo({ top: 300, behavior: 'smooth' }); }
+
+/* ============ Suggestions (autocomplete) ============ */
+const inputEl = $('q');
+const sugBox  = $('suggestions');
+let sugItems = [];
+let sugActiveIdx = -1;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function hideSuggestions() {
+  sugBox.classList.remove('show');
+  sugBox.innerHTML = '';
+  sugItems = [];
+  sugActiveIdx = -1;
+}
+
+function showSuggestions(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) { hideSuggestions(); return; }
+
+  const gameSet = new Set();
+  const hubSet  = new Set();
+  SCRIPTS.forEach(s => {
+    if (s.game && s.game.toLowerCase().includes(q)) gameSet.add(s.game);
+    if (s.hub  && s.hub.toLowerCase().includes(q))  hubSet.add(s.hub);
+  });
+
+  sugItems = [
+    ...[...gameSet].slice(0, 6).map(v => ({ type: 'Game', label: v })),
+    ...[...hubSet ].slice(0, 6).map(v => ({ type: 'Hub',  label: v })),
+  ];
+  sugActiveIdx = -1;
+
+  if (!sugItems.length) {
+    sugBox.innerHTML = `<div class="sug-empty">Không có gợi ý</div>`;
+    sugBox.classList.add('show');
+    return;
+  }
+
+  sugBox.innerHTML = sugItems.map((it, i) => `
+    <div class="sug-item" data-idx="${i}">
+      <span class="sug-label">${esc(it.label)}</span>
+    </div>
+  `).join('');
+  sugBox.classList.add('show');
+
+  sugBox.querySelectorAll('.sug-item').forEach(el => {
+    el.addEventListener('click', () => pickSuggestion(Number(el.dataset.idx)));
+  });
+}
+
+function pickSuggestion(idx) {
+  const it = sugItems[idx];
+  if (!it) return;
+  inputEl.value = it.label;
+  cat = 'Tất Cả';
+  currentPage = 1;
+  render();
+  hideSuggestions();
+  inputEl.blur();
+}
+
+function highlightSuggestion(newIdx) {
+  const nodes = sugBox.querySelectorAll('.sug-item');
+  if (!nodes.length) return;
+  sugActiveIdx = (newIdx + nodes.length) % nodes.length;
+  nodes.forEach((n, i) => n.classList.toggle('active', i === sugActiveIdx));
+  nodes[sugActiveIdx].scrollIntoView({ block: 'nearest' });
+}
+
+let renderTimeout;
+inputEl.addEventListener('input', () => {
+  if (inputEl.value.trim() !== '') cat = 'Tất Cả';
+  currentPage = 1;
+  clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(render, 150);
+  showSuggestions(inputEl.value);
+});
+
+inputEl.addEventListener('keydown', (e) => {
+  if (!sugBox.classList.contains('show')) {
+    if (e.key === 'Enter' && inputEl.value.trim() !== '') {
+      cat = 'Tất Cả'; currentPage = 1; render();
+    }
+    return;
+  }
+  if (e.key === 'ArrowDown') { e.preventDefault(); highlightSuggestion(sugActiveIdx + 1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); highlightSuggestion(sugActiveIdx - 1); }
+  else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (sugActiveIdx >= 0) pickSuggestion(sugActiveIdx);
+    else { if (inputEl.value.trim() !== '') { cat = 'Tất Cả'; currentPage = 1; render(); } hideSuggestions(); }
+  } else if (e.key === 'Escape') {
+    hideSuggestions();
+  }
+});
+
+$('go').addEventListener('click', () => {
+  if (inputEl.value.trim() !== '') cat = 'Tất Cả';
+  currentPage = 1;
+  render();
+  hideSuggestions();
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-wrap')) hideSuggestions();
+});
+
+render();
+</script>
+</body>
+</html>
