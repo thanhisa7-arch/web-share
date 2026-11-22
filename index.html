@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pain Script</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+<link rel="preconnect" href="https://i.ibb.co" crossorigin>
+<link rel="preconnect" href="https://wsrv.nl" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://raw.githubusercontent.com">
+<link rel="dns-prefetch" href="https://i.ibb.co">
+<link rel="dns-prefetch" href="https://wsrv.nl">
+<!-- Font Fredoka giống phong cách hoạt hình -->
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-base: #7eb0d5;
+  --surface: #fcf8eb;
+  --surface-2: #e8dfc8;
+  --surface-hover: #ffffff;
+  --border-color: #3b3b3b;
+  --text-main: #2b2b2b;
+  --text-sub: #555555;
+  --text-dim: #888888;
+  --accent-yellow: #ffca3a;
+  --accent-green: #5cb85c;
+  --radius: 12px;
+  --shadow-hard: 4px 4px 0px rgba(0,0,0,0.15);
+  --shadow-btn: 0 4px 0px var(--border-color);
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: light; }
+body {
+  margin: 0;
+  background-color: var(--bg-base);
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 40px 40px;
+  color: var(--text-main);
+  font-family: 'Fredoka', system-ui, sans-serif;
+  min-height: 100vh;
+  padding-bottom: 40px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 20px 10px 20px;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+/* ===== Ảnh ủng hộ ad (góc trên bên phải, kế avatar) ===== */
+.support-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 20;
+  animation: badgeFloat 2.8s ease-in-out infinite;
+}
+
+@keyframes badgeFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.support-badge img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+  border: 3px solid var(--border-color);
+  box-shadow: var(--shadow-hard);
+  background: #fff;
+}
+
+.support-badge .support-text {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  color: #ffffff;
+  background: #e63946;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 3px 6px;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.35);
+}
+
+.avatar-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 4px solid var(--border-color);
+  box-shadow: var(--shadow-hard);
+  padding: 2px;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-wrapper.playing { animation: musicPulse 1.2s infinite alternate ease-in-out; }
+
+@keyframes musicPulse {
+  0% { transform: scale(1); box-shadow: var(--shadow-hard); }
+  100% { transform: scale(1.05); box-shadow: 0 6px 0px rgba(0,0,0,0.2); border-color: var(--accent-yellow); }
+}
+
+.avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+.profile-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  text-shadow: 2px 2px 0 #333, -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
+  margin-bottom: 16px;
+  letter-spacing: 1px;
+}
+
+.audio-player-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #333;
+  border: 3px solid var(--border-color);
+  border-radius: 30px;
+  padding: 8px 18px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-hard);
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.1s;
+}
+.audio-player-card:active { transform: translateY(4px); box-shadow: none; }
+
+.play-icon-badge {
+  background: var(--accent-green);
+  border: 2px solid var(--border-color);
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  color: white;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 0 var(--border-color);
+}
+
+.audio-info { display: flex; flex-direction: column; flex: 1; margin: 0 12px; }
+.audio-title { font-size: 13px; font-weight: 600; color: #ffffff; }
+.audio-sub { font-size: 11px; color: #aaaaaa; font-weight: 500; }
+
+.equalizer { display: flex; align-items: flex-end; gap: 3px; height: 18px; }
+.eq-bar { width: 4px; background: var(--accent-green); border-radius: 2px; height: 4px; }
+.playing .eq-bar { animation: wave 0.8s infinite ease-in-out alternate; }
+.playing .eq-bar:nth-child(1) { animation-delay: 0.1s; }
+.playing .eq-bar:nth-child(2) { animation-delay: 0.3s; }
+.playing .eq-bar:nth-child(3) { animation-delay: 0.2s; }
+.playing .eq-bar:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes wave { 0% { height: 4px; } 100% { height: 18px; } }
+
+.social-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 25px;
+}
+
+.yt-btn, .tt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-radius: var(--radius);
+  width: 100%;
+  min-width: 0;
+  letter-spacing: 0.5px;
+  border: 3px solid var(--border-color);
+  box-shadow: var(--shadow-btn);
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+
+.yt-btn { background: #ff0000; }
+.tt-btn { background: #000000; }
+
+.yt-btn:active, .tt-btn:active { transform: translateY(4px); box-shadow: none; }
+
+main { max-width: 800px; margin: 0 auto; padding: 10px 16px; }
+
+.hero-title {
+  text-align: center;
+  font-size: clamp(24px, 6vw, 36px);
+  font-weight: 700;
+  margin: 4px 0;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 var(--border-color), -1px -1px 0 var(--border-color), 1px -1px 0 var(--border-color), -1px 1px 0 var(--border-color), 1px 1px 0 var(--border-color);
+}
+
+.hero-sub {
+  text-align: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 24px;
+  text-shadow: 1px 1px 0 var(--border-color);
+}
+
+/* ===== Search wrap + Suggestions ===== */
+.search-wrap { position: relative; margin-bottom: 20px; }
+
+.search-box {
+  background: var(--surface);
+  border: 3px solid var(--border-color);
+  border-radius: 30px;
+  padding: 6px 6px 6px 18px;
+  display: flex;
+  align-items: center;
+  box-shadow: var(--shadow-hard);
+  margin-bottom: 0;
+}
+.search-box input { border: none; outline: none; width: 100%; font-family: inherit; font-size: 15px; color: var(--text-main); background: transparent; font-weight: 500; }
+.search-box input::placeholder { color: var(--text-dim); }
+.search-box button {
+  background: var(--accent-yellow); border: 2px solid var(--border-color); color: var(--text-main);
+  padding: 8px 20px; border-radius: 20px; font-family: inherit; font-weight: 700; font-size: 14px; cursor: pointer;
+  box-shadow: 0 3px 0 var(--border-color); transition: transform .1s, box-shadow .1s;
+}
+.search-box button:active { transform: translateY(3px); box-shadow: none; }
+
+.suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--surface);
+  border: 3px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: var(--shadow-hard);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 100;
+  display: none;
+  padding: 6px;
+}
+.suggestions.show { display: block; }
+.suggestions .sug-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-main);
+  transition: background .15s;
+}
+.suggestions .sug-item:hover,
+.suggestions .sug-item.active { background: var(--accent-yellow); }
+
+/* Ẩn nhãn GAME / HUB */
+.suggestions .sug-type { display: none !important; }
+
+.suggestions .sug-empty {
+  padding: 12px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tags {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tags button {
+  width: 100%; min-width: 0; background: var(--surface); border: 3px solid var(--border-color);
+  padding: 8px 6px; border-radius: 20px; font-family: inherit; font-size: 13px; font-weight: 700;
+  color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 6px; line-height: 1.2; text-align: center; white-space: normal; word-break: break-word; overflow: hidden;
+  box-shadow: 0 3px 0 var(--border-color); transition: transform .1s, box-shadow .1s, background .2s;
+}
+.tags button:active { transform: translateY(3px); box-shadow: none; }
+.tags button.on { background: var(--accent-yellow); color: var(--text-main); }
+.tags button span.dot { flex: 0 0 auto; width: 10px; height: 10px; border-radius: 50%; display: inline-block; border: 2px solid var(--border-color); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.card {
+  background: var(--surface);
+  border: 3px solid var(--border-color);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-hard);
+  display: flex;
+  flex-direction: column;
+  transition: transform .1s, box-shadow .1s;
+}
+.card:active { transform: translateY(4px); box-shadow: none; }
+
+.card-img-box {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  border-bottom: 3px solid var(--border-color);
+}
+
+.card-img-box::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, #d0d0d0 25%, #e8e8e8 50%, #d0d0d0 75%);
+  background-size: 200% 100%; animation: shimmer 1.4s infinite; z-index: 1; transition: opacity .35s ease;
+}
+.card-img-box.loaded::before { opacity: 0; pointer-events: none; }
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+.card-img-box img {
+  width: 100%; height: 100%; object-fit: cover; 
+  object-position: top center;
+  opacity: 0; transition: opacity .35s ease; position: relative; z-index: 2;
+}
+.card-img-box img.img-ready { opacity: 1; }
+
+.card-img-placeholder {
+  color: var(--text-main); font-weight: 700; font-size: 14px; letter-spacing: 0.5px;
+  text-align: center; padding: 0 8px; position: relative; z-index: 2;
+}
+
+.card-body { padding: 12px; display: flex; flex-direction: column; flex: 1; }
+
+.card-title {
+  font-size: 20px; 
+  font-weight: 700; 
+  margin: 0 0 12px 0; 
+  color: var(--text-main); 
+  line-height: 1.3;
+  text-align: center;
+}
+
+.game-name { 
+  color: #e63946; 
+  font-weight: 600; 
+  display: block; 
+  margin-top: 6px; 
+  font-size: 16px; 
+}
+
+.card-footer {
+  margin-top: auto; display: flex; justify-content: space-between; align-items: center;
+  gap: 6px; padding-top: 10px; border-top: 2px dashed rgba(0,0,0,0.1);
+}
+
+.btn-link {
+  flex: 1; text-align: center; background: #ffffff; border: 2px solid var(--border-color);
+  color: var(--text-main); text-decoration: none; font-weight: 700; font-size: 13px; padding: 8px 0;
+  border-radius: 8px; transition: all .1s ease; display: flex; justify-content: center; align-items: center;
+  box-shadow: 0 3px 0 var(--border-color);
+}
+.btn-link:active { transform: translateY(3px); box-shadow: none; background: #f0f0f0; }
+
+.btn-sub { background: #f4f4f4; }
+
+.pagination { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 30px; flex-wrap: wrap; }
+.pagination button {
+  background: #ffffff; border: 2px solid var(--border-color); padding: 8px 16px; border-radius: 10px;
+  font-family: inherit; font-size: 14px; font-weight: 700; color: var(--text-main); cursor: pointer;
+  box-shadow: 0 3px 0 var(--border-color); transition: all 0.1s ease;
+}
+.pagination button:active:not(:disabled) { transform: translateY(3px); box-shadow: none; }
+.pagination button.active { background: var(--accent-yellow); }
+.pagination button:disabled { opacity: 0.5; cursor: not-allowed; background: #ddd; }
+
+@media (max-width: 480px) {
+  .tags { grid-template-columns: repeat(2, 1fr); }
+  .grid { gap: 8px; }
+  .card-body { padding: 10px 6px; }
+  .card-title { font-size: 16px; } 
+  .game-name { font-size: 14px; margin-top: 4px; }
+  .btn-link { font-size: 11px; padding: 6px 0; }
+
+  /* Badge nhỏ lại cho gọn trên điện thoại */
+  .support-badge { width: 78px; top: 8px; right: 8px; gap: 4px; }
+  .support-badge .support-text { font-size: 9px; padding: 2px 4px; border-radius: 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Audio: preload none để không tải nhạc khi vào trang -->
+<audio id="bgAudio" loop playsinline preload="none">
+  <source src="./nhac.mp3" type="audio/mp3">
+</audio>
+
+<div class="header-container">
+
+  <!-- ===== Ảnh ủng hộ ad + chữ ===== -->
+  <div class="support-badge">
+    <img src="https://wsrv.nl/?url=https%3A%2F%2Fi.ibb.co%2FWNy4m01H%2FIMG-5965.jpg&w=240&h=240&fit=cover&output=webp&q=80"
+         alt="Ủng hộ ad" decoding="async" fetchpriority="high">
+    <span class="support-text">Ước Dc Donate</span>
+  </div>
+
+  <div class="avatar-wrapper" id="avatarFrame">
+    <img class="avatar-img"
+         src="https://wsrv.nl/?url=https%3A%2F%2Fraw.githubusercontent.com%2FPainPH10%2F1%2Frefs%2Fheads%2Fmain%2FIMG_4609.jpeg&w=200&output=webp&q=80"
+         alt="Pain Script Avatar" decoding="async" fetchpriority="high">
+  </div>
+  <div class="profile-name">Pain Script</div>
+
+  <div class="audio-player-card" id="playerWidget" onclick="manualPlayTrigger()">
+    <div class="play-icon-badge" id="iconBadge">▶</div>
+    <div class="audio-info">
+      <span class="audio-title"> Em Ơi Anh Phải Làm Sao</span>
+      <span class="audio-sub" id="audioStatus">Chạm 1 lần để bật nhạc</span>
+    </div>
+    <div class="equalizer" id="equalizer">
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+      <div class="eq-bar"></div>
+    </div>
+  </div>
+
+  <div class="social-row">
+    <a class="yt-btn" href="https://www.youtube.com/@PainPHOne1" target="_blank" rel="noopener">
+      ▶ YOUTUBE
+    </a>
+    <a class="tt-btn" href="https://www.tiktok.com/@0painph10?_r=1&_t=ZS-9AcqbYeLDCD" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M16.6 5.82a5.19 5.19 0 0 0 3.4 1.25V10a8.1 8.1 0 0 1-3.53-.86v5.48a6.15 6.15 0 1 1-6.15-6.15c.34 0 .67.03 1 .09v3.15a3.05 3.05 0 1 0 2.15 2.91V2h2.98a5.19 5.19 0 0 0 .15 3.82z"/>
+      </svg>
+      TIKTOK
+    </a>
+  </div>
+</div>
+
+<main>
+  <h1 class="hero-title">Nếu Script Game Nào Chưa Update Hoặc Lỗi Ib TikTok Ad Để Update Script Mới</h1>
+  <div class="hero-sub">Lưu Ý Tìm Kiếm Hãy Ghi Tên Game Là Tiếng Anh, Ai Không Biết Tên Tiếng Anh Xem Lại Cap Video Mình Có Để Tên Game</div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <input id="q" type="search" placeholder="Tìm kiếm script..." autocomplete="off" spellcheck="false">
+      <button id="go" type="button">Tìm</button>
+    </div>
+    <div class="suggestions" id="suggestions" role="listbox" aria-label="Gợi ý tìm kiếm"></div>
+  </div>
+
+  <div class="tags" id="tags"></div>
+  <div class="grid" id="list"></div>
+  <div class="pagination" id="pagination"></div>
+</main>
+
+<script>
+/* ============ Audio (có TẮT / MỞ) ============ */
+const audio = document.getElementById('bgAudio');
+const avatarFrame = document.getElementById('avatarFrame');
+const playerWidget = document.getElementById('playerWidget');
+const audioStatus = document.getElementById('audioStatus');
+const iconBadge = document.getElementById('iconBadge');
+let isPlaying = false;
+let userPaused = false; // Cờ đánh dấu người dùng đã chủ động tắt nhạc
+
+/* UI khi nhạc đang phát */
+function activateAudioUI() {
+  isPlaying = true;
+  userPaused = false;
+  avatarFrame.classList.add('playing');
+  playerWidget.classList.add('playing');
+  iconBadge.innerText = '♫';
+  audioStatus.innerText = 'Đang phát • Chạm để tắt';
+}
+
+/* UI khi nhạc bị tắt */
+function deactivateAudioUI() {
+  isPlaying = false;
+  userPaused = true;
+  avatarFrame.classList.remove('playing');
+  playerWidget.classList.remove('playing');
+  iconBadge.innerText = '▶';
+  audioStatus.innerText = 'Nhạc đã tắt • Chạm để bật';
+}
+
+function tryAutoplay() {
+  if (userPaused) return; // Không auto bật lại nếu user đã chủ động tắt
+  audio.play().then(() => { activateAudioUI(); removeInteractionListeners(); })
+    .catch(() => { audioStatus.innerText = 'Chạm để bật nhạc'; });
+}
+
+function unlockAndPlay() {
+  if (userPaused) return; // Tôn trọng lựa chọn của user
+  if (!isPlaying) {
+    audio.play().then(() => { activateAudioUI(); removeInteractionListeners(); })
+      .catch(() => {});
+  }
+}
+
+/* 🔁 Click vào player = BẬT / TẮT (toggle) */
+function manualPlayTrigger() {
+  if (audio.paused) {
+    audio.play().then(activateAudioUI).catch(() => {});
+  } else {
+    audio.pause();
+    deactivateAudioUI();
+  }
+}
+
+function removeInteractionListeners() {
+  ['pointerdown','touchstart','click','scroll'].forEach(evt => document.removeEventListener(evt, unlockAndPlay));
+}
+['pointerdown','touchstart','click','scroll'].forEach(evt => {
+  document.addEventListener(evt, unlockAndPlay, { passive: true });
+});
+window.addEventListener('DOMContentLoaded', () => {
+  setTimeout(tryAutoplay, 2000);
+});
+
+/* ============ Fast CDN rewrite + image resize ============ */
+function fastCDN(url){
+  if (!url) return url;
+
+  const m = url.match(/^https:\/\/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/(.+)$/);
+  if (m) {
+    const [, user, repo, rest] = m;
+    let branch, path;
+    if (rest.startsWith('refs/heads/')) {
+      const after = rest.slice(11);
+      const s = after.indexOf('/');
+      if (s !== -1) { branch = after.slice(0, s); path = after.slice(s + 1); }
+    } else {
+      const s = rest.indexOf('/');
+      if (s !== -1) { branch = rest.slice(0, s); path = rest.slice(s + 1); }
+    }
+    if (branch && path) {
+      return `https://cdn.jsdelivr.net/gh/${user}/${repo}@${branch}/${path}`;
+    }
+    return url;
+  }
+
+  if (/^https:\/\/i\.ibb\.co\//.test(url)) {
+    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=640&output=webp&q=75`;
+  }
+
+  return url;
+}
+
+/* ============ Data ============ */
+const SCRIPTS = [
+  {id: 1, hub:"Nox Hub", game:"Vox Seas", c:"Tất Cả", link:"https://link4m.net/l9d3zHVM", subLink:"https://link4m.org/2dD0D", img:"https://i.ibb.co/svBzy732/IMG-6212.jpg"},
+  {id: 2, hub:"Rift", game:"Climb For Animals Eggs", c:"Tất Cả", link:"https://link4m.net/esiNRzQm", subLink:"https://link4m.org/aM3vs5", img:"https://i.ibb.co/2Y8wSqpK/IMG-5037.jpg"},
+  {id: 3, hub:"N-Hook", game:"Solve The Cube", c:"Tất Cả", link:"https://link4m.net/8oqCO5sN", subLink:"https://link4m.org/fU173sY", img:"https://i.ibb.co/VpMX4kjS/IMG-5068.jpg"},
+  {id: 4, hub:"R Hub", game:"Ride A Pet", c:"Tất Cả", link:"https://link4m.net/Un5BcNem", subLink:"https://link4m.org/V6yRgx", img:"https://raw.githubusercontent.com/PainPH10/13-9/refs/heads/main/IMG_4155.jpeg"},
+  {id: 5, hub:"Sell Lemons", game:"", c:"Tất Cả", link:"https://link4m.org/z3UoA", subLink:"https://link4m.org/ig7XmH", img:"https://i.ibb.co/23gMZnfC/IMG-5049.jpg"},
+  {id: 6, hub:"Furmix Hub", game:"Bike For Egg", c:"Tất Cả", link:"https://link4m.net/uVa6MWY6", subLink:"https://link4m.org/5Ovxh", img:"https://i.ibb.co/wN6hS8hn/8-D6-ED3-EA-E99-B-405-F-BFC9-0-EC1-EF5-AA4-D2.jpg"},
+  {id: 7, hub:"Dek Dev Hub", game:"Break And Steal An Egg", c:"Tất Cả", link:"https://link4m.net/xgzeS", subLink:"https://link4m.org/oHTRXhim", img:"https://i.ibb.co/vCSbzGnf/IMG-5518.jpg"},
+  {id: 8, hub:"MorthUp", game:"", c:"Tất Cả", link:"https://link4m.org/7VuBc", subLink:"https://link4m.net/NoY94", img:"https://i.ibb.co/BVyhFWQK/IMG-4735.jpg"},
+  {id: 9, hub:"Pn Hub", game:"My Dino Life", c:"Tất Cả", link:"https://link4m.org/D6Y9qpO", subLink:"https://link4m.net/tarppnu", img:"https://i.ibb.co/tMYG0Xf7/IMG-5818.jpg"},
+  {id: 10, hub:"Jurassic Blocky", game:"", c:"Tất Cả", link:"https://fnote.net/notes/Nn2nNB", subLink:"https://fnote.net/notes/Nn2nNB", img:"https://i.ibb.co/tP8qzhg9/IMG-4737.jpg"},
+  {id: 11, hub:"KLZE Hub", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.org/caYi66ts", subLink:"https://link4m.org/AfnPM", img:"https://i.ibb.co/X1wbBFk/IMG-5718.jpg"},
+  {id: 12, hub:"Jurassic Pixel", game:"", c:"Tất Cả", link:"https://link4m.net/3B7FeFyC", subLink:"https://link4m.org/GKszg1", img:"https://i.ibb.co/kgk80jgM/IMG-4738.jpg"},
+  {id: 13, hub:"TTJY Hub", game:"Creatures Of Sonaria", c:"Tất Cả", link:"https://link4m.net/bc8Hm", subLink:"https://link4m.net/4uaDRqgK", img:"https://i.ibb.co/HTCwPk3L/IMG-4743.jpg"},
+  {id: 14, hub:"RBXZ", game:"Prehistoric Farm", c:"Tất Cả", link:"https://link4m.org/18NdKed", subLink:"https://link4m.org/sLRN6Cm", img:"https://i.ibb.co/53xpNbR/IMG-4744.jpg"},
+  {id: 15, hub:"Strawbery Hub", game:"Primeval Earth", c:"Tất Cả", link:"https://link4m.org/OxbbiWX9", subLink:"https://link4m.net/pxSLU", img:"https://i.ibb.co/23SBpzB5/IMG-4756.jpg"},
+  {id: 16, hub:"Cybrion", game:"Deep Fishing", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.org/ckXNta", subLink:"https://link4m.org/y2JwMd", img:"https://i.ibb.co/pc6kh9R/IMG-5080.jpg"},
+  {id: 17, hub:"Adonis Hub", game:"Throw Food For Animals", c:"Throw Food For Animals", link:"https://link4m.net/Yrk52uf", subLink:"https://link4m.net/eIAd4hQZ", img:"https://i.ibb.co/zWjyNnhp/IMG-5993.jpg"},
+  {id: 18, hub:"Dueling Grounds", game:"", c:"Tất Cả", link:"https://link4m.net/mnmLtR9x", subLink:"https://link4m.net/rkMS3FO", img:"https://i.ibb.co/mCPQTwFt/IMG-4759.jpg"},
+  {id: 19, hub:"Ouroboros", game:"+1 Loot To Forge", c:"Tất Cả", link:"https://link4m.org/YckTOM4P", subLink:"https://link4m.org/VvuEClXp", img:"https://i.ibb.co/DnjQrsH/IMG-4745.jpg"},
+  {id: 20, hub:"AirFlow Hub", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.org/meuoYA2Q", subLink:"https://link4m.org/zN918mz", img:"https://i.ibb.co/Ps0kCFGx/IMG-5804.jpg"},
+  {id: 21, hub:"Chnronix Hub", game:"lllegal Soccer", c:"Tất Cả", link:"https://link4m.org/PK04nNx", subLink:"https://link4m.net/bawtv1", img:"https://i.ibb.co/QFcT41tD/IMG-4746.jpg"},
+  {id: 22, hub:"Generic Hub", game:"Pixel Blade", c:"Tất Cả", link:"https://link4m.net/UF22p", subLink:"https://link4m.org/44QEFRSS", img:"https://i.ibb.co/B5BfkzkR/IMG-4747.jpg"},
+  {id: 23, hub:"StarCrow Hub", game:"Heavyweight Fishing", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.net/m90WUhbK", subLink:"https://link4m.net/T6Gcw", img:"https://i.ibb.co/Ps4J25BZ/IMG-4748.jpg"},
+  {id: 24, hub:"Anime Dice", game:"", c:"Tất Cả", link:"https://link4m.org/FxtMnM", subLink:"https://link4m.net/eZnl8", img:"https://i.ibb.co/YFvrbp5Y/IMG-4749.jpg"},
+  {id: 25, hub:"Dueling Grounds Mới", game:"", c:"Tất Cả", link:"https://link4m.org/I0Mms7e", subLink:"https://link4m.org/T3M6haE", img:"https://i.ibb.co/Jj8JWTGG/IMG-4750.jpg"},
+  {id: 26, hub:"Cybrion", game:"Heavyweight Fishing", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.net/reyQHYK", subLink:"https://link4m.org/Ok3iozab", img:"https://i.ibb.co/xtf1wrtc/IMG-4751.jpg"},
+  {id: 27, hub:"Barrage", game:"That Freekick Challenge", c:"Tất Cả", link:"https://link4m.org/srCUB", subLink:"https://link4m.net/YqiqPK", img:"https://i.ibb.co/k2Yk7t0j/IMG-4752.jpg"},
+  {id: 28, hub:"Pivot", game:"Tribes 3v3", c:"Tất Cả", link:"https://link4m.org/2ThUjT", subLink:"https://link4m.org/OzsCD", img:"https://i.ibb.co/0RKxkrFN/IMG-5216.jpg"},
+  {id: 29, hub:"AirFlow Hub", game:"Huss Valley", c:"Tất Cả", link:"https://link4m.org/tYQC7YhY", subLink:"https://link4m.org/9kuhvGL", img:"https://i.ibb.co/C3g61642/IMG-5125.jpg"},
+  {id: 30, hub:"Khfresh", game:"Heavyweight Fishing", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.net/fVZpeH", subLink:"https://link4m.net/En5iuml1", img:"https://i.ibb.co/KcgvqpM3/IMG-4754.jpg"},
+  {id: 31, hub:"Niah Hub", game:"Kaiju Alpha", c:"Tất Cả", link:"https://link4m.net/KeJbwBEK", subLink:"https://link4m.net/dy2wY", img:"https://i.ibb.co/9HqVWfKX/IMG-4762.jpg"},
+  {id: 32, hub:"RBXZ", game:"Fisch", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.org/KPOIIid", subLink:"https://link4m.org/dxUOW", img:"https://i.ibb.co/Y71yJ1FZ/IMG-5215.jpg"},
+  {id: 34, hub:"Barrage", game:"Solve The Cube", c:"Tất Cả", link:"https://link4m.org/5Mlcl", subLink:"https://link4m.net/IKlEd6hb", img:"https://i.ibb.co/DDPW6SBq/IMG-5069.jpg"},
+  {id: 35, hub:"Survival A Million Monkey", game:"", c:"Tất Cả", link:"https://link4m.org/ErGSJC", subLink:"https://link4m.net/WkaqNI", img:"https://i.ibb.co/DP5Lj5s0/IMG-4767.jpg"},
+  {id: 36, hub:"Dekdev", game:"Harpoon A Fish", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.net/nnuOTQ", subLink:"https://link4m.net/PGzFVr", img:"https://i.ibb.co/q8XCcWg/IMG-4768.jpg"},
+  {id: 37, hub:"Luks Hub", game:"Chop A Forest", c:"Tất Cả", link:"https://link4m.org/fLQg9Lo", subLink:"https://link4m.org/kwb1lit", img:"https://i.ibb.co/XxN6PDG4/IMG-4769.jpg"},
+  {id: 38, hub:"My Anime Mine", game:"", c:"Tất Cả", link:"https://link4m.org/FKak8So", subLink:"https://link4m.org/xSJm58", img:"https://i.ibb.co/5g4DGwp4/IMG-4770.jpg"},
+  {id: 39, hub:"AirFlow Hub", game:"Sell Fries", c:"Tất Cả", link:"https://link4m.net/dKI2bRv", subLink:"https://link4m.org/5OBeQ5Nu", img:"https://i.ibb.co/d46dj81Q/IMG-4771.jpg"},
+  {id: 40, hub:"Valinc Syndicate", game:"Evade", c:"Tất Cả", link:"https://link4m.net/1na23", subLink:"https://link4m.org/yPVOs", img:"https://i.ibb.co/HTVgwzzb/IMG-4772.jpg"},
+  {id: 41, hub:"Ride A Dino", game:"", c:"Tất Cả Script Khủng Long", link:"https://link4m.org/y2TPbX", subLink:"https://link4m.org/lIPok", img:"https://i.ibb.co/PZM3zmWL/IMG-4773.jpg"},
+  {id: 42, hub:"Foxname", game:"99 Nights in the Forest", c:"99 Nights In The Forest", link:"https://link4m.net/r6hLPeK", subLink:"https://link4m.org/VXmf8rGC", img:"https://i.ibb.co/svG0dQKy/IMG-5978.jpg"},
+  {id: 43, hub:"Stockfish", game:"Rochess", c:"Tất Cả", link:"https://link4m.org/hZPjOeU", subLink:"https://link4m.net/nFD46", img:"https://i.ibb.co/JWB55t04/IMG-5931.jpg"},
+  {id: 44, hub:"Tora Isme", game:"+1 Venom Evolution", c:"Tất Cả", link:"https://link4m.net/gaUog6ia", subLink:"https://link4m.net/xLwhJs8Z", img:"https://i.ibb.co/B2Q9BDhN/IMG-5549.jpg"},
+  {id: 45, hub:"Ringta", game:"99 Nights in the Forest", c:"99 Nights In The Forest", link:"https://link4m.org/VDzuM", subLink:"https://link4m.org/ejfWy", img:"https://i.ibb.co/s9zvqsRQ/IMG-6317.jpg"},
+  {id: 46, hub:"RBXZ", game:"Deep Fishing", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.org/Qz027jc", subLink:"https://link4m.org/K7oH4", img:"https://i.ibb.co/gMzgqB6P/IMG-5103.jpg"},
+  {id: 47, hub:"Farm Sự Kiện", game:"Evade", c:"Tất Cả", link:"https://link4m.org/H9vIE71V", subLink:"https://link4m.net/H9vIE71V", img:"https://i.ibb.co/DHVGfXLJ/IMG-4778.jpg"},
+  {id: 48, hub:"Slopix Hub", game:"Ball Vs Ball", c:"Tất Cả", link:"https://link4m.org/K2imMty", subLink:"https://link4m.net/2SRqD", img:"https://i.ibb.co/KjpJBZdW/IMG-4780.jpg"},
+  {id: 49, hub:"Mario Hub", game:"Build An Ant Empire", c:"Tất Cả", link:"https://link4m.net/FpGcxQ", subLink:"https://link4m.net/3NLEF1", img:"https://i.ibb.co/wZGHQ0MM/IMG-4779.jpg"},
+  {id: 50, hub:"Mystrix Hub", game:"Climb For Animals Eggs", c:"Tất Cả", link:"https://link4m.org/c66ih", subLink:"https://link4m.net/tGX5xP", img:"https://i.ibb.co/G4Xwk4py/IMG-5038.jpg"},
+  {id: 51, hub:"Barrage", game:"+1 Pickaxe Swing For Egg", c:"Tất Cả", link:"https://link4m.org/ICdeG", subLink:"https://link4m.net/RAqJa", img:"https://i.ibb.co/qY620wW9/IMG-4798.jpg"},
+  {id: 51, hub:"Fake An Egg", game:"", c:"Tất Cả", link:"https://link4m.net/KUkvxxJn", subLink:"https://link4m.net/WzubxhjM", img:"https://i.ibb.co/4wjf4P9j/IMG-4811.jpg"},
+  {id: 52, hub:"Barrage", game:"8 Ball Duels", c:"Tất Cả", link:"https://link4m.net/L5rJICr", subLink:"https://link4m.net/yoPhp", img:"https://i.ibb.co/RkdJRvNG/IMG-4815.jpg"},
+  {id: 53, hub:"Mirage Hub", game:"Untitled Boxing Game", c:"Tất Cả", link:"https://link4m.net/8nGzS3", subLink:"https://link4m.org/oPSbcv", img:"https://i.ibb.co/nqYvvCkx/IMG-4836.jpg"},
+  {id: 54, hub:"Alexandria", game:"Be A Soccer Manager", c:"Tất Cả", link:"https://link4m.net/7P95T", subLink:"https://link4m.org/5GEeac", img:"https://i.ibb.co/SDyLr4Sz/IMG-5657.jpg"},
+  {id: 55, hub:"StarCrow", game:"Anime Ability Arena", c:"Tất Cả", link:"https://link4m.net/0hfqZt65", subLink:"https://link4m.org/VHkQs0", img:"https://i.ibb.co/gLBc2shY/IMG-4939.jpg"},
+  {id: 56, hub:"Jujutsu Shenanigans", game:"", c:"Tất Cả", link:"https://link4m.net/1EoT5IQz", subLink:"https://link4m.net/2RiQq2X", img:"https://i.ibb.co/DPfCtBH6/IMG-5102.jpg"},
+  {id: 57, hub:"Ajjans", game:"Break And Steal An Egg", c:"Tất Cả", link:"https://link4m.net/Fv5Jt", subLink:"https://link4m.org/YEmFuJ0", img:"https://i.ibb.co/cS97rfPk/IMG-4967.jpg"},
+  {id: 58, hub:"Barrage", game:"Backseat Rally", c:"Tất Cả", link:"https://link4m.net/obvNS", subLink:"https://link4m.org/kmLahP", img:"https://i.ibb.co/XfxBLrv5/IMG-4943.jpg"},
+  {id: 59, hub:"MeritHub", game:"Skywars", c:"Tất Cả", link:"https://link4m.org/xqo9OR", subLink:"https://link4m.net/ZncpE", img:"https://i.ibb.co/HDxJ3Jyv/IMG-5200.jpg"},
+  {id: 60, hub:"RBXZ", game:"Bike Universe", c:"Tất Cả", link:"https://link4m.org/z3xb9", subLink:"https://link4m.net/hGBeM4L", img:"https://i.ibb.co/XrcH2LmV/IMG-5405.jpg"},
+  {id: 61, hub:"Corvus", game:"Blue Lock Farm", c:"Tất Cả", link:"https://link4m.net/dMFPf8RA", subLink:"https://link4m.org/sMuAg", img:"https://i.ibb.co/6J4q2vWg/IMG-5268.jpg"},
+  {id: 62, hub:"ddariuspr", game:"Dont Splash", c:"Tất Cả", link:"https://link4m.net/2m9Z0", subLink:"https://link4m.org/sMuAg", img:"https://i.ibb.co/FbRzJVyW/IMG-5306.jpg"},
+  {id: 63, hub:"Mystrix", game:"Throw Food For Animals", c:"Throw Food For Animals", link:"https://link4m.net/dxWEhDN", subLink:"https://link4m.org/mryYilX", img:"https://i.ibb.co/KjwWTLKr/IMG-5347.jpg"},
+  {id: 64, hub:"Mystrix", game:"Bike For Egg", c:"Tất Cả", link:"https://link4m.org/G3Sf6Z", subLink:"https://link4m.net/iOS5Y3", img:"https://i.ibb.co/HT34cDfz/IMG-5355.jpg"},
+  {id: 65, hub:"Steal A Pet And Ride It", game:"", c:"Tất Cả", link:"https://link4m.org/qSOsOin", subLink:"https://link4m.org/JQ4WL", img:"https://i.ibb.co/v4jKHNmK/IMG-5369.jpg"},
+  {id: 66, hub:"UB Hub", game:"Fisch", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.org/KOVmOqu", subLink:"https://link4m.org/cZ7jLaD", img:"https://i.ibb.co/fd68gw4Z/IMG-5394.jpg"},
+  {id: 67, hub:"Mystrix", game:"Bike Universe", c:"Tất Cả", link:"https://link4m.org/WNIAYt", subLink:"https://link4m.org/LFL0cpVc", img:"https://i.ibb.co/jZ8FtnZ4/IMG-5406.jpg"},
+  {id: 68, hub:"Sottoro", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.net/en2eMK", subLink:"https://link4m.net/3o4G8uW3", img:"https://i.ibb.co/M5B82P4N/IMG-5433.jpg"},
+  {id: 69, hub:"Barrage", game:"Ride Storm", c:"Tất Cả", link:"https://link4m.org/DOjFPf4Q", subLink:"https://link4m.org/vrO0Z70", img:"https://i.ibb.co/G4Hw0pWF/IMG-5444.jpg"},
+  {id: 70, hub:"RobScript", game:"Fake An Egg", c:"Tất Cả", link:"https://link4m.net/zFaHiQ", subLink:"https://link4m.net/DszvWI", img:"https://i.ibb.co/pjq2vhYd/IMG-5468.jpg"},
+  {id: 71, hub:"Smooth Hub", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.net/CUZCO4BP", subLink:"https://link4m.net/pdoJkrcd", img:"https://i.ibb.co/s951gJPK/IMG-5484.jpg"},
+  {id: 72, hub:"AKkiwi", game:"Steal A Pet An Ride It", c:"Tất Cả", link:"https://link4m.net/lFgZDQP", subLink:"https://link4m.org/X6rNLNiG", img:"https://i.ibb.co/nNf7YQmW/IMG-5499.jpg"},
+  {id: 73, hub:"Zynex Hub", game:"Fish It", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.net/PIuVhn", subLink:"https://link4m.net/sNFo5", img:"https://i.ibb.co/BVjbV2f0/IMG-5526.jpg"},
+  {id: 74, hub:"Helio Hub", game:"Storage Hunters Open World", c:"Tất Cả", link:"https://link4m.org/wTDXVc6", subLink:"https://link4m.org/boTdU", img:"https://i.ibb.co/HTDTKvpb/IMG-5596.jpg"},
+  {id: 75, hub:"Axon Hub", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.org/Xiech", subLink:"https://link4m.net/VAMvd", img:"https://i.ibb.co/RTKZCvQ1/IMG-5622.jpg"},
+  {id: 76, hub:"Tora Isme", game:"+1 Anime Eyes", c:"Tất Cả", link:"https://link4m.org/IERXjGZA", subLink:"https://link4m.net/2huOvlDP", img:"https://i.ibb.co/F48s7D5F/IMG-5633.jpg"},
+  {id: 77, hub:"Solo Hub", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.net/8w35Pq7Y", subLink:"https://link4m.net/9aoUi", img:"https://i.ibb.co/vxnpD4vK/IMG-5645.jpg"},
+  {id: 78, hub:"Rs Hub", game:"RoWorld", c:"Tất Cả", link:"https://link4m.org/izCSJxdb", subLink:"https://link4m.net/fKb5EU7", img:"https://i.ibb.co/nqHLhxXh/IMG-5683.jpg"},
+  {id: 79, hub:"Multi Hub", game:"Bug Evolution", c:"Tất Cả", link:"https://link4m.net/f5EHtDVa", subLink:"https://link4m.net/rRZee5t", img:"https://i.ibb.co/Swp8gkT4/IMG-6331.jpg"},
+  {id: 80, hub:"Rayfield", game:"Primeval Earth", c:"Tất Cả", link:"https://link4m.net/vWVdnl", subLink:"https://link4m.org/QsjNSy", img:"https://i.ibb.co/tTM6ZsTT/IMG-4739.jpg"},
+  {id: 81, hub:"Nobulem.wtf", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.net/wwt3bp", subLink:"https://link4m.org/GaEVMfw0", img:"https://i.ibb.co/v4WVv9hT/IMG-6192.jpg"},
+  {id: 82, hub:"Akkiwi", game:"Throw Food For Animals", c:"Throw Food For Animals", link:"https://link4m.org/LFCrC1", subLink:"https://link4m.net/L4rUZws", img:"https://i.ibb.co/VnsdkB3/IMG-5740.jpg"},
+  {id: 83, hub:"Tora Isme", game:"Survive Your Ideas", c:"Tất Cả", link:"https://link4m.org/v5Nln", subLink:"https://link4m.net/k2u0heop", img:"https://i.ibb.co/LzMphxvf/IMG-5777.jpg"},
+  {id: 84, hub:"Axon Hub", game:"King Legacy", c:"King Legacy", link:"https://link4m.net/O5QrVUeW", subLink:"https://link4m.org/hFoaz", img:"https://i.ibb.co/h1XQc9tc/IMG-5885.jpg"},
+  {id: 85, hub:"Zee Hub", game:"King Legacy", c:"King Legacy", link:"https://link4m.org/ETovap", subLink:"https://link4m.net/QJhci", img:"https://i.ibb.co/prZcj2Hj/IMG-5884.jpg"},
+  {id: 86, hub:"Wukong Hub", game:"King Legacy", c:"King Legacy", link:"https://link4m.net/8njS5", subLink:"https://link4m.org/aeZoVyK", img:"https://i.ibb.co/21JhG6x5/IMG-5944.jpg"},
+  {id: 87, hub:"Xeioa", game:"Throw Food For Animals", c:"Throw Food For Animals", link:"https://link4m.net/UIupWBl", subLink:"https://link4m.net/yUArx", img:"https://i.ibb.co/r2ysfvMC/IMG-5954.jpg"},
+  {id: 88, hub:"Yuri", game:"Throw A Seed", c:"Tất Cả", link:"https://link4m.org/mQHNf", subLink:"https://link4m.net/BDOo3R", img:"https://i.ibb.co/m59CCSYX/IMG-6016.jpg"},
+  {id: 89, hub:"LNR Hub", game:"Fisch", c:"Tất Cả Script Game Câu Cá", link:"https://link4m.org/mjE9a", subLink:"https://link4m.org/GTqn2z", img:"https://i.ibb.co/mVdsb7Y0/IMG-6024.jpg"},
+  {id: 90, hub:"Adonis Hub", game:"Throw A Seed", c:"Tất Cả", link:"https://link4m.net/wci8W", subLink:"https://link4m.org/WFpBgDt", img:"https://i.ibb.co/1tZd1Bwf/IMG-6045.jpg"},
+  {id: 91, hub:"RBXZ", game:"Driving Empire", c:"Tất Cả", link:"https://link4m.org/pkZUH", subLink:"https://link4m.net/tpsHCK", img:"https://i.ibb.co/xKcFFMMr/IMG-6314.jpg"},
+  {id: 92, hub:"Spectrum", game:"King Legacy", c:"King Legacy", link:"https://link4m.org/JY0aofuB", subLink:"https://link4m.net/IKHCwc", img:"https://i.ibb.co/fYwhGFht/IMG-6114.jpg"},
+  {id: 93, hub:"DYXNET Hub", game:"Paper To Plane", c:"Tất Cả", link:"https://link4m.org/p1t6VWzc", subLink:"https://link4m.net/3MsJjKp", img:"https://i.ibb.co/twDJFcw7/IMG-6293.jpg"},
+  {id: 94, hub:"Core. Xyz", game:"99 Nights in the Forest", c:"99 Nights In The Forest", link:"https://link4m.net/Jrz5XJyJ", subLink:"https://link4m.net/PVk25UF0", img:"https://i.ibb.co/Z60HNPFT/IMG-6150.jpg"},
+  {id: 95, hub:"MoonDiety", game:"Throw Food For Animals", c:"Throw Food For Animals", link:"https://link4m.net/9uFD2k", subLink:"https://link4m.net/J4Rgik7", img:"https://i.ibb.co/Gf6j1y4p/IMG-6156.jpg"},
+  {id: 96, hub:"Lumin Hub", game:"King Legacy", c:"King Legacy", link:"https://link4m.net/jbOYl4K", subLink:"https://link4m.net/WIkmNiz", img:"https://i.ibb.co/HfkP3R9W/IMG-6169.jpg"},
+  {id: 97, hub:"Cryonix", game:"King Legacy", c:"King Legacy", link:"https://link4m.org/5oIRBCL", subLink:"https://link4m.org/cgsBMcWm", img:"https://i.ibb.co/tppFzr69/IMG-6227.jpg"},
+  {id: 98, hub:"Mythios", game:"Ant Evolution", c:"Tất Cả", link:"https://link4m.net/dltlIxKO", subLink:"https://link4m.org/unZhXL", img:"https://i.ibb.co/1G96fvNd/IMG-6329.jpg"},
+  {id: 99, hub:"RBXZ", game:"FERAL Animal Survival", c:"Tất Cả", link:"https://link4m.org/KvzT2c", subLink:"https://link4m.org/MZHrok0m", img:"https://i.ibb.co/wZBy4zQY/IMG-6260.jpg"},
+  {id: 100, hub:"Aqua Hub", game:"King Legacy", c:"King Legacy", link:"https://link4m.org/OXQiaf", subLink:"https://link4m.org/9Y6l1Msj", img:"https://i.ibb.co/cqdz6DM/IMG-6273.jpg"},
+  {id: 101, hub:"Kuzan Hub", game:"Paper To Plane", c:"Tất Cả", link:"https://link4m.net/USGX2D", subLink:"https://link4m.org/Ldvw4O", img:"https://i.ibb.co/0R7FHMmT/IMG-6292.jpg"},
+  {id: 102, hub:"Mystrix", game:"Driving Empire", c:"Tất Cả", link:"https://link4m.net/sTUtm", subLink:"https://link4m.org/63vtiX2p", img:"https://i.ibb.co/qLnqnD5n/IMG-6315.jpg"},
+  {id: 103, hub:"Multi Hub", game:"Ant Evolution", c:"Tất Cả", link:"https://link4m.net/bl5dv4", subLink:"https://link4m.net/itrCk", img:"https://i.ibb.co/DPgbgh55/IMG-6330.jpg"},
+  {id: 104, hub:"One Hub", game:"King Legacy", c:"King Legacy", link:"https://link4m.org/dcfp4Z79", subLink:"https://link4m.net/sI4qpjp", img:"https://i.ibb.co/PGmgQD84/IMG-6352.jpg"},
+  {id: 105, hub:"Kryzen Hub", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.org/dNhqsdzo", subLink:"https://link4m.net/5TSDM1", img:"https://i.ibb.co/HL9mbFXR/IMG-6361.jpg"},
+  {id: 106, hub:"Cryonix", game:"Attack On Titan Revolution", c:"Attack On Titan Revolution", link:"https://link4m.net/p9xBgX", subLink:"https://link4m.net/oWjnqFO9", img:"https://i.ibb.co/TqnCj1c7/IMG-5899.jpg"}
+];
+
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+shuffle(SCRIPTS);
+
+const dotColors = ['#ff4fa3', '#a855f7', '#38bdf8', '#ffca3a'];
+const $ = id => document.getElementById(id);
+let cat = 'Tất Cả';
+let currentPage = 1;
+const ITEMS_PER_PAGE = 20;
+const cats = ['Tất Cả', 'Attack On Titan Revolution', 'King Legacy', 'Tất Cả Script Game Câu Cá', '99 Nights In The Forest', 'Throw Food For Animals'];
+
+/* ============ Fast image pipeline ============ */
+let imgObserver;
+if (typeof IntersectionObserver !== 'undefined') {
+  imgObserver = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      const img = entry.target;
+      const url = img.dataset.src;
+      if (url && !img.src) {
+        img.src = url;
+        img.onload = () => {
+          img.classList.add('img-ready');
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+        img.onerror = () => {
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+      }
+      imgObserver.unobserve(img);
+    }
+  }, { rootMargin: '600px 0px', threshold: 0.01 });
+} else {
+  imgObserver = {
+    observe: (img) => {
+      const url = img.dataset.src;
+      if (url && !img.src) {
+        img.src = url;
+        img.onload = () => {
+          img.classList.add('img-ready');
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+        img.onerror = () => {
+          const box = img.closest('.card-img-box');
+          if (box) box.classList.add('loaded');
+        };
+      }
+    },
+    unobserve: () => {}
+  };
+}
+
+function primeFirstImages(count = 4) {
+  const imgs = [...document.querySelectorAll('.card-img-box img[data-src]')].slice(0, count);
+  imgs.forEach(img => {
+    const url = img.dataset.src;
+    if (!url) return;
+    img.fetchPriority = 'high';
+    img.removeAttribute('loading');
+    img.src = url;
+    img.onload = () => {
+      img.classList.add('img-ready');
+      const box = img.closest('.card-img-box');
+      if (box) box.classList.add('loaded');
+    };
+    img.onerror = () => {
+      const box = img.closest('.card-img-box');
+      if (box) box.classList.add('loaded');
+    };
+    imgObserver.unobserve(img);
+  });
+}
+
+/* ============ Render ============ */
+function render(){
+  const q = $('q').value.trim().toLowerCase();
+
+  const filtered = SCRIPTS.filter(s =>
+    (cat === 'Tất Cả' || s.c === cat) &&
+    (!q || s.hub.toLowerCase().includes(q) || s.game.toLowerCase().includes(q))
+  );
+
+  const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+  if (currentPage > totalPages) currentPage = totalPages;
+
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
+
+  $('tags').innerHTML = cats.map((c, i) => `
+    <button class="${c === cat ? 'on' : ''}" onclick="changeCat('${c}')">
+      <span class="dot" style="background:${dotColors[i % dotColors.length]}"></span>
+      <span>${c}</span>
+    </button>
+  `).join('');
+
+  $('list').innerHTML = paginated.map(s => `
+    <div class="card">
+      <div class="card-img-box">
+        ${s.img
+          ? `<img data-src="${fastCDN(s.img)}" alt="${s.hub}" decoding="async" loading="lazy" fetchpriority="low" width="640" height="360">`
+          : `<div class="card-img-placeholder">SCRIPT ${s.c.toUpperCase()}</div>`}
+      </div>
+      <div class="card-body">
+        <h2 class="card-title">
+          ${s.hub} ${s.game ? `<span class="game-name">${s.game}</span>` : ''}
+        </h2>
+        <div class="card-footer">
+          <a class="btn-link" href="${s.link}" target="_blank" rel="noopener">LINK CHÍNH</a>
+          <a class="btn-link btn-sub" href="${s.subLink}" target="_blank" rel="noopener">LINK PHỤ</a>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.card-img-box img[data-src]').forEach(img => imgObserver.observe(img));
+  primeFirstImages(4);
+
+  let pageButtons = '';
+  if (totalPages > 1) {
+    pageButtons += `<button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">&larr; Trước</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      pageButtons += `<button class="${p === currentPage ? 'active' : ''}" onclick="changePage(${p})">${p}</button>`;
+    }
+    pageButtons += `<button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Sau &rarr;</button>`;
+  }
+  $('pagination').innerHTML = pageButtons;
+}
+
+function changeCat(c) { cat = c; currentPage = 1; render(); hideSuggestions(); }
+function changePage(p) { currentPage = p; render(); window.scrollTo({ top: 300, behavior: 'smooth' }); }
+
+/* ============ Suggestions (autocomplete) ============ */
+const inputEl = $('q');
+const sugBox  = $('suggestions');
+let sugItems = [];
+let sugActiveIdx = -1;
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function hideSuggestions() {
+  sugBox.classList.remove('show');
+  sugBox.innerHTML = '';
+  sugItems = [];
+  sugActiveIdx = -1;
+}
+
+function showSuggestions(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) { hideSuggestions(); return; }
+
+  const gameSet = new Set();
+  const hubSet  = new Set();
+  SCRIPTS.forEach(s => {
+    if (s.game && s.game.toLowerCase().includes(q)) gameSet.add(s.game);
+    if (s.hub  && s.hub.toLowerCase().includes(q))  hubSet.add(s.hub);
+  });
+
+  sugItems = [
+    ...[...gameSet].slice(0, 6).map(v => ({ type: 'Game', label: v })),
+    ...[...hubSet ].slice(0, 6).map(v => ({ type: 'Hub',  label: v })),
+  ];
+  sugActiveIdx = -1;
+
+  if (!sugItems.length) {
+    sugBox.innerHTML = `<div class="sug-empty">Không có gợi ý — thử từ khóa khác</div>`;
+    sugBox.classList.add('show');
+    return;
+  }
+
+  sugBox.innerHTML = sugItems.map((it, i) => `
+    <div class="sug-item" data-idx="${i}">
+      <span class="sug-label">${esc(it.label)}</span>
+    </div>
+  `).join('');
+  sugBox.classList.add('show');
+
+  sugBox.querySelectorAll('.sug-item').forEach(el => {
+    el.addEventListener('click', () => pickSuggestion(Number(el.dataset.idx)));
+  });
+}
+
+function pickSuggestion(idx) {
+  const it = sugItems[idx];
+  if (!it) return;
+  inputEl.value = it.label;
+  cat = 'Tất Cả';
+  currentPage = 1;
+  render();
+  hideSuggestions();
+  inputEl.blur();
+}
+
+function highlightSuggestion(newIdx) {
+  const nodes = sugBox.querySelectorAll('.sug-item');
+  if (!nodes.length) return;
+  sugActiveIdx = (newIdx + nodes.length) % nodes.length;
+  nodes.forEach((n, i) => n.classList.toggle('active', i === sugActiveIdx));
+  nodes[sugActiveIdx].scrollIntoView({ block: 'nearest' });
+}
+
+let renderTimeout;
+inputEl.addEventListener('input', () => {
+  if (inputEl.value.trim() !== '') cat = 'Tất Cả';
+  currentPage = 1;
+  clearTimeout(renderTimeout);
+  renderTimeout = setTimeout(render, 150);
+  showSuggestions(inputEl.value);
+});
+
+inputEl.addEventListener('keydown', (e) => {
+  if (!sugBox.classList.contains('show')) {
+    if (e.key === 'Enter' && inputEl.value.trim() !== '') {
+      cat = 'Tất Cả'; currentPage = 1; render();
+    }
+    return;
+  }
+  if (e.key === 'ArrowDown') { e.preventDefault(); highlightSuggestion(sugActiveIdx + 1); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); highlightSuggestion(sugActiveIdx - 1); }
+  else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (sugActiveIdx >= 0) pickSuggestion(sugActiveIdx);
+    else { if (inputEl.value.trim() !== '') { cat = 'Tất Cả'; currentPage = 1; render(); } hideSuggestions(); }
+  } else if (e.key === 'Escape') {
+    hideSuggestions();
+  }
+});
+
+$('go').addEventListener('click', () => {
+  if (inputEl.value.trim() !== '') cat = 'Tất Cả';
+  currentPage = 1;
+  render();
+  hideSuggestions();
+});
+
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.search-wrap')) hideSuggestions();
+});
+
+render();
+</script>
+</body>
+</html>
